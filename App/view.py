@@ -36,10 +36,9 @@ operación solicitada
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("1- Inicializar catálogo")
+    print("2- Cargar información en el catálogo")
 
-catalog = None
 
 """
 Menu principal
@@ -55,6 +54,12 @@ while True:
     elif int(inputs[0]) == 2:
         print("Cargando información de los archivos ....")
         controller.loadData(catalog)
+        print("El total de videos cargados es: " + str(controller.videosSize(catalog)))
+        print("El total de categorías cargadas es: " + str(controller.categoriesSize(catalog)))
+    
+    elif int(inputs[0]) == 3:
+        category = input("Sobre que catergoría desea buscar: ")
+        print(controller.getCategory(catalog,category))
         
 
     else:

@@ -71,4 +71,16 @@ def loadCategories(catalog):
 
 # Funciones de ordenamiento
 
+
+# ========================================
 # Funciones de consulta sobre el catálogo
+# ========================================
+
+def videosSize(catalog):
+    return model.videosSize(catalog)
+
+def categoriesSize(catalog):
+    return model.categoriesSize(catalog)
+
+def getCategory(catalog,category):
+    return model.getCategory(catalog,category)

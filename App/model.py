@@ -57,12 +57,12 @@ def newCatalog ():
                'countries':None,
                'categories':None }
     
-    catalog['videos'] = lt.newList('SINGLE_LINKED',compareVideoIds)
+    catalog['videos'] = lt.newList('SINGLE_LINKED')
 
     catalog['videosIds'] = mp.newMap(10000,
                                      maptype='CHAINING',
-                                     loadfactor=4.0,
-                                     comparefunction=compareMapVideoIds)
+                                     loadfactor=4.0
+                                     )
 
     catalog['countries'] = mp.newMap(400,
                                      maptype='CHAINING',
@@ -73,6 +73,8 @@ def newCatalog ():
                                       maptype='PROBING',
                                       loadfactor=0.5
                                       )
+
+    return catalog
 
 # ===============================================                                      
 # Funciones para agregar informacion al catalogo
@@ -86,9 +88,29 @@ def addVideo(catalog, video):
     lt.addLast(catalog['videos'], video)
     mp.put(catalog['videosIds'],video['video_id'], video)
 
+def addCategory(catalog, category):
+    """
+    Agrega la categoria al MAP usando el id como llave y el name como valor
+    """
+    mp.put(catalog['categories'],category['name'],category['id'])
+    
+
 # Funciones para creacion de datos
 
+# ======================
 # Funciones de consulta
+# ======================
+
+def videosSize(catalog):
+    return lt.size(catalog['videos'])
+
+def categoriesSize(catalog):
+    return mp.size(catalog['categories'])
+
+def getCategory(catalog, category_name):
+    category = mp.get(catalog['categories'],category_name)
+    
+    return category['value']
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
