@@ -36,10 +36,55 @@ assert cf
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
 """
-
+# ========================
 # Construccion de modelos
+# ========================
 
+def newCatalog ():
+    """
+    Crea una lista vacia para guardar todos los videos
+
+    Se crean indices (MAPS) por los siguientes criterios:
+
+    country
+    category_id
+
+    Retorna el catalogo iniciado
+    """
+
+    catalog = {'videos':None,
+               'videosIds':None,
+               'countries':None,
+               'categories':None }
+    
+    catalog['videos'] = lt.newList('SINGLE_LINKED',compareVideoIds)
+
+    catalog['videosIds'] = mp.newMap(10000,
+                                     maptype='CHAINING',
+                                     loadfactor=4.0,
+                                     comparefunction=compareMapVideoIds)
+
+    catalog['countries'] = mp.newMap(400,
+                                     maptype='CHAINING',
+                                     loadfactor=4.0
+                                    )
+
+    catalog['categories'] = mp.newMap(41,
+                                      maptype='PROBING',
+                                      loadfactor=0.5
+                                      )
+
+# ===============================================                                      
 # Funciones para agregar informacion al catalogo
+# ===============================================
+
+def addVideo(catalog, video):
+    """
+    Agrega el video a la lista de videos
+    Guarda el video en un MAP usando el id como su llave
+    """
+    lt.addLast(catalog['videos'], video)
+    mp.put(catalog['videosIds'],video['video_id'], video)
 
 # Funciones para creacion de datos
 
@@ -48,3 +93,30 @@ los mismos.
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+
+# =========================
+# Funciones de comparación
+# =========================
+
+def compareVideoIds(id1, id2):
+    """
+    Compara dos ids de dos libros
+    """
+    if (id1 == id2):
+        return 0
+    elif (id1 > id2):
+        return 1
+    else:
+        return -1
+
+def compareMapVideoIds(id, entry):
+    """
+    Compara dos ids de libros, id es un identificador y entry una pareja llave-valor
+    """
+    identry = me.getKey(entry)
+    if (int(id)==int(identry)):
+        return 0
+    elif (int(id) > int(identry)):
+        return 1
+    else:
+        return -1
