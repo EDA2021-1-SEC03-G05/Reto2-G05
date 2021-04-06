@@ -55,7 +55,8 @@ def newCatalog ():
     catalog = {'videos':None,
                'videosIds':None,
                'countries':None,
-               'categories':None }
+               'categories':None,
+               'categoriesAndCountries':None }
     
     catalog['videos'] = lt.newList('SINGLE_LINKED')
 
@@ -73,6 +74,10 @@ def newCatalog ():
                                       maptype='PROBING',
                                       loadfactor=0.5
                                       )
+    
+    catalog['categoriesAndCountries'] = mp.newMap(500,
+                                                  maptype='CHAINING',
+                                                  loadfactor=0.5)
 
     return catalog
 
@@ -93,6 +98,26 @@ def addCategory(catalog, category):
     Agrega la categoria al MAP usando el id como llave y el name como valor
     """
     mp.put(catalog['categories'],category['name'],category['id'])
+
+def addCategoryAndCountry(catalog, video):
+    """
+    Agrega a un MAP un elemento cuyo 
+    """
+    existsCategoryAndCountry = mp.contains(catalog['categoriesAndCountries'], (video['category_id'] + video['country'].lower().strip()))
+
+    if existsCategoryAndCountry:
+        existing = mp.get(catalog['categoriesAndCountries'],(video['category_id'] + video['country'].lower().strip()) )
+        value = existing['value']
+        lt.addLast(value, video)
+    
+    else:
+        lists = lt.newList()
+        lt.addFirst(lists, video)
+        mp.put(catalog['categoriesAndCountries'],(video['category_id'] + video['country'].lower().strip()), lists)
+
+
+   
+
     
 
 # Funciones para creacion de datos
@@ -111,6 +136,10 @@ def getCategory(catalog, category_name):
     category = mp.get(catalog['categories'],category_name)
     
     return category['value']
+
+def getCategoryAndCountry(catalog, categoryAndCountry):
+    return mp.get(catalog['categoriesAndCountries'],categoryAndCountry)
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

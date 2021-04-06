@@ -58,6 +58,7 @@ def loadVideos(catalog):
     inputfile = csv.DictReader(open(videosfile, encoding='utf-8'))
     for video in inputfile:
         model.addVideo(catalog, video)
+        model.addCategoryAndCountry(catalog, video)
 
 def loadCategories(catalog):
     """
@@ -84,3 +85,6 @@ def categoriesSize(catalog):
 
 def getCategory(catalog,category):
     return model.getCategory(catalog,category)
+
+def getCategoryAndCountry(catalog, categoryAndCountry):
+    return model.getCategoryAndCountry(catalog, categoryAndCountry)

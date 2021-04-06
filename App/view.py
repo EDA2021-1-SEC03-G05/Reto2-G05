@@ -59,7 +59,10 @@ while True:
     
     elif int(inputs[0]) == 3:
         category = input("Sobre que catergoría desea buscar: ")
-        print(controller.getCategory(catalog,category))
+        category = (controller.getCategory(catalog,category))
+        country = input("Sobre que país desea buscar : ")
+        print (controller.getCategoryAndCountry(catalog, category + country.lower().strip()))
+
         
 
     else:
