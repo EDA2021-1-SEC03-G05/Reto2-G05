@@ -38,6 +38,7 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar catálogo")
     print("2- Cargar información en el catálogo")
+    print("3- Top n videos más vistos para determinado país y categoría")
 
 
 """
@@ -59,11 +60,19 @@ while True:
     
     elif int(inputs[0]) == 3:
         category = input("Sobre que catergoría desea buscar: ")
-        category = (controller.getCategory(catalog,category))
         country = input("Sobre que país desea buscar : ")
-        print (controller.getCategoryAndCountry(catalog, category + country.lower().strip()))
+        rank = int(input("Ingrese la cantidad de videos para el top de vistas: "))
+        """
+        Se le pide al usuario el nombre de una categoria y se retorna el numero correspondiente
 
-        
+        Luego segun el pais indicado se busca la lista correspondiente a categoria+pais
+
+        Finalmente se organizan los videos por numero de views
+
+        """
+        categoryNumber = (controller.getCategory(catalog,category))
+        categoryAndCountry = controller.getCategoryAndCountry(catalog, categoryNumber + country.lower().strip()) # Error aqui, se esta botando un mapa en vez de la lista
+        answer = controller.sortVideosByViews(categoryAndCountry, rank) 
 
     else:
         sys.exit(0)

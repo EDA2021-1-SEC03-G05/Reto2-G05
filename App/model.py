@@ -58,7 +58,7 @@ def newCatalog ():
                'categories':None,
                'categoriesAndCountries':None }
     
-    catalog['videos'] = lt.newList('SINGLE_LINKED')
+    catalog['videos'] = lt.newList(datastructure='SINGLE_LINKED')
 
     catalog['videosIds'] = mp.newMap(10000,
                                      maptype='CHAINING',
@@ -138,12 +138,30 @@ def getCategory(catalog, category_name):
     return category['value']
 
 def getCategoryAndCountry(catalog, categoryAndCountry):
-    return mp.get(catalog['categoriesAndCountries'],categoryAndCountry)
+    catAndCounList = mp.get(catalog['categoriesAndCountries'],categoryAndCountry)
 
+    return catAndCounList
 
+# =================================================================
 # Funciones utilizadas para comparar elementos dentro de una lista
+# =================================================================
 
+def compareViews(video1, video2):
+    """
+    Compara el numero de views de dos videos, devuelve verdadero si el primero es mayor que el segundo
+    """
+    return int(video1['views']) > int(video2['views'])
+
+# ==========================
 # Funciones de ordenamiento
+# ==========================
+
+def sortVideosByViews(categoryAndCountry, rank):
+
+    sortedList = sa.sort(categoryAndCountry, compareViews)
+    subList = lt.subList(sortedList,1,rank)
+
+    return subList
 
 # =========================
 # Funciones de comparación

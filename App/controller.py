@@ -69,8 +69,12 @@ def loadCategories(catalog):
     for category in inputfile:
         model.addCategory(catalog, category)
 
-
+# ==========================
 # Funciones de ordenamiento
+# ==========================
+
+def sortVideosByViews(categoryAndCountry, rank):
+    return model.sortVideosByViews(categoryAndCountry, rank)
 
 
 # ========================================
