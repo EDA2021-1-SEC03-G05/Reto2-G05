@@ -60,8 +60,8 @@ def newCatalog ():
     catalog['videos'] = lt.newList(datastructure='SINGLE_LINKED')
 
     catalog['videosByCategory'] = mp.newMap(41,
-                                      maptype='PROBING',
-                                      loadfactor=0.5
+                                      maptype='PROBING', #TODO cambiar para las pruebas del Lab 7
+                                      loadfactor=0.8
                                       )
 
     catalog['categories'] = mp.newMap(41,
