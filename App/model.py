@@ -53,22 +53,16 @@ def newCatalog ():
     """
 
     catalog = {'videos':None,
-               'videosIds':None,
-               'countries':None,
+               'videosByCategory':None, # Laboratorio 6
                'categories':None,
                'categoriesAndCountries':None }
     
     catalog['videos'] = lt.newList(datastructure='SINGLE_LINKED')
 
-    catalog['videosIds'] = mp.newMap(10000,
-                                     maptype='CHAINING',
-                                     loadfactor=4.0
-                                     )
-
-    catalog['countries'] = mp.newMap(400,
-                                     maptype='CHAINING',
-                                     loadfactor=4.0
-                                    )
+    catalog['videosByCategory'] = mp.newMap(41,
+                                      maptype='PROBING',
+                                      loadfactor=0.5
+                                      )
 
     catalog['categories'] = mp.newMap(41,
                                       maptype='PROBING',
@@ -88,10 +82,23 @@ def newCatalog ():
 def addVideo(catalog, video):
     """
     Agrega el video a la lista de videos
-    Guarda el video en un MAP usando el id como su llave
     """
     lt.addLast(catalog['videos'], video)
-    mp.put(catalog['videosIds'],video['video_id'], video)
+
+def addVideoByCategory(catalog, video):
+    existsCategory = mp.contains(catalog['videosByCategory'],video['category_id'])
+
+    if existsCategory:
+        existing = mp.get(catalog['videosByCategory'],video['category_id'])
+        value = existing['value']
+        lt.addLast(value, video)
+    
+    else:
+        lists = lt.newList()
+        lt.addFirst(lists, video)
+        mp.put(catalog['videosByCategory'],video['category_id'],lists)
+
+
 
 def addCategory(catalog, category):
     """
@@ -115,10 +122,6 @@ def addCategoryAndCountry(catalog, video):
         lt.addFirst(lists, video)
         mp.put(catalog['categoriesAndCountries'],(video['category_id'] + video['country'].lower().strip()), lists)
 
-
-   
-
-    
 
 # Funciones para creacion de datos
 

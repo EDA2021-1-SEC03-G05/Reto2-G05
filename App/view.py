@@ -54,9 +54,11 @@ while True:
 
     elif int(inputs[0]) == 2:
         print("Cargando información de los archivos ....")
-        controller.loadData(catalog)
+        answer = controller.loadData(catalog)
         print("El total de videos cargados es: " + str(controller.videosSize(catalog)))
         print("El total de categorías cargadas es: " + str(controller.categoriesSize(catalog)))
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}"," || ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
     
     elif int(inputs[0]) == 3:
         category = input("Sobre que catergoría desea buscar: ")
@@ -71,7 +73,8 @@ while True:
 
         """
         categoryNumber = (controller.getCategory(catalog,category))
-        categoryAndCountry = controller.getCategoryAndCountry(catalog, categoryNumber + country.lower().strip()) # Error aqui, se esta botando un mapa en vez de la lista
+        categoryAndCountry = controller.getCategoryAndCountry(catalog, categoryNumber + country.lower().strip()) 
+        #TODO Error aqui, se esta botando un mapa en vez de la lista
         answer = controller.sortVideosByViews(categoryAndCountry, rank) 
 
     else:
