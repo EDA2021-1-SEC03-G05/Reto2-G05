@@ -72,10 +72,10 @@ while True:
         Finalmente se organizan los videos por numero de views
 
         """
-        categoryNumber = (controller.getCategory(catalog,category))
+        categoryNumber = (controller.getCategory(catalog,category.lower().strip()))
         categoryAndCountry = controller.getCategoryAndCountry(catalog, categoryNumber + country.lower().strip()) 
-        #TODO Error aqui, se esta botando un mapa en vez de la lista
-        answer = controller.sortVideosByViews(categoryAndCountry, rank) 
+        answer = controller.sortVideosByViews(categoryAndCountry, rank)
+        controller.printReqOne(answer)
 
     else:
         sys.exit(0)

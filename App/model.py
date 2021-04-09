@@ -30,6 +30,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.DataStructures import arraylistiterator as it
 assert cf
 
 """
@@ -61,7 +62,7 @@ def newCatalog ():
 
     catalog['videosByCategory'] = mp.newMap(41,
                                       maptype='PROBING', #TODO cambiar para las pruebas del Lab 7
-                                      loadfactor=0.8
+                                      loadfactor=0.3
                                       )
 
     catalog['categories'] = mp.newMap(41,
@@ -104,7 +105,7 @@ def addCategory(catalog, category):
     """
     Agrega la categoria al MAP usando el id como llave y el name como valor
     """
-    mp.put(catalog['categories'],category['name'],category['id'])
+    mp.put(catalog['categories'],(category['name'].lower().strip()),category['id'])
 
 def addCategoryAndCountry(catalog, video):
     """
@@ -118,7 +119,7 @@ def addCategoryAndCountry(catalog, video):
         lt.addLast(value, video)
     
     else:
-        lists = lt.newList()
+        lists = lt.newList('ARRAY_LIST')
         lt.addFirst(lists, video)
         mp.put(catalog['categoriesAndCountries'],(video['category_id'] + video['country'].lower().strip()), lists)
 
@@ -142,8 +143,9 @@ def getCategory(catalog, category_name):
 
 def getCategoryAndCountry(catalog, categoryAndCountry):
     catAndCounList = mp.get(catalog['categoriesAndCountries'],categoryAndCountry)
+    answer = catAndCounList['value']
 
-    return catAndCounList
+    return answer
 
 # =================================================================
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -192,3 +194,21 @@ def compareMapVideoIds(id, entry):
         return 1
     else:
         return -1
+
+# Funciones para imprimir valores
+
+def printReqOne(orderedList):
+
+    iterator = it.newIterator(orderedList)
+
+    while it.hasNext(iterator):
+
+        element = it.next(iterator)
+        print(element['trending_date'] + "\t" +
+              element['title'] + "\t" +
+              element['channel_title'] + "\t" +
+              element['publish_time'] + "\t" +
+              element['views'] + "\t" +
+              element['likes'] + "\t" +
+              element['dislikes']
+              )
