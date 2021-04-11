@@ -81,6 +81,7 @@ def loadVideos(catalog):
         video['trending_time']=1
         model.addVideoById(catalog,video)
 
+
 def loadCategories(catalog):
     """
     Carga todas las categorias del archivo e indica al modelo que los adicione al catalogo
@@ -96,6 +97,9 @@ def loadCategories(catalog):
 
 def sortVideosByViews(categoryAndCountry, rank):
     return model.sortVideosByViews(categoryAndCountry, rank)
+
+def sortVideosByTrending(categoryList, rank):
+    return model.sortVideosByTrending(categoryList, rank)
 
 
 # ========================================
@@ -113,6 +117,15 @@ def getCategory(catalog,category):
 
 def getCategoryAndCountry(catalog, categoryAndCountry):
     return model.getCategoryAndCountry(catalog, categoryAndCountry)
+
+def createList(catalog):
+    return model.createList(catalog)
+
+def createMap(catalog, idList):
+    return model.createMap(catalog,idList)
+
+def getCountryOrCategory(catalog, category):
+    return model.getCountryOrCategory(catalog, category)
 
 # ======================================
 # Funciones para medir tiempo y memoria
@@ -146,8 +159,13 @@ def deltaMemory(start_memory, stop_memory):
     delta_memory /= 1024.0
     return delta_memory
 
+# ================================
 # Funciones para imprimir valores
 
 def printReqOne(orderedList,rank):
 
     model.printReqOne(orderedList,rank)
+
+def printReqThree(oneVideoList):
+
+    model.printReqThree(oneVideoList)

@@ -87,6 +87,13 @@ while True:
 
     elif int(inputs[0]) == 5:
         category = input("Sobre que catergoría desea buscar: ")
+        categoryNumber = (controller.getCategory(catalog,category.lower().strip()))
+        idList = controller.createList(catalog)
+        print(type(idList))#TODO no esta saliendo en tipo lista sino en diccionario
+        mapidList = controller.createMap(catalog, idList)
+        categoryList = controller.getCountryOrCategory(catalog, categoryNumber)
+        answer = controller.sortVideosByTrending(categoryList, 1)
+        controller.printReqThree(answer)
 
     else:
         sys.exit(0)

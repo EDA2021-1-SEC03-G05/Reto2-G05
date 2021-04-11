@@ -79,6 +79,10 @@ def newCatalog ():
                              loadfactor=0.5
                              )
 
+    catalog['countriesOrCategoriesById'] = mp.newMap(500,
+                                                  maptype='CHAINING',
+                                                  loadfactor=0.5)
+
     return catalog
 
 # ===============================================                                      
@@ -141,8 +145,51 @@ def addVideoById(catalog,video):
     else:
         mp.put(catalog['videosById'],video['video_id'],video)
 
-
+# =================================
 # Funciones para creacion de datos
+# =================================
+
+def createList(catalog):
+    return mp.keySet(catalog['videosById'])
+
+def createMap(catalog, idList):
+    print(type(idList))#TODO Esta arrojando un dict en vez de un list
+
+    iterator = it.newIterator(idList)
+
+    while it.hasNext(iterator):
+
+        video = it.next(iterator)
+        """
+        Categorizacion por categorias
+        """
+        existingCategory = mp.contains(catalog['countriesOrCategoriesById'],video['category_id'])
+
+        if existingCategory:
+            existsCategory = mp.get(catalog['countriesOrCategoriesById'],video['category_id'])
+            categoryList = me.getValue(existsCategory)
+            lt.addLast(categoryList, video)
+
+        else: 
+            newCategoryList = lt.newList('ARRAY_LIST')
+            lt.addFirst(newCategoryList, video)
+            mp.put(catalog['countriesOrCategoriesById'],video['category_id'],newCategoryList)
+
+        """
+        Categorizacion por paises
+        """
+        existingCountry = mp.contains(catalog['countriesOrCategoriesById'],video['country'])
+
+        if existingCountry:
+            existsCountry = mp.get(catalog['countriesOrCategoriesById'],video['country'])
+            countryList = me.getValue(existsCountry)
+            lt.addLast(countryList, video)
+
+        else: 
+            newCountryList = lt.newList('ARRAY_LIST')
+            lt.addFirst(newCountryList, video)
+            mp.put(catalog['countriesOrCategoriesById'],video['country'],newCountryList)
+
 
 # ======================
 # Funciones de consulta
@@ -165,6 +212,13 @@ def getCategoryAndCountry(catalog, categoryAndCountry):
 
     return answer
 
+def getCountryOrCategory(catalog, category):
+    categoryKeyValue = mp.get(catalog['countriesOrCategoriesById'], category)
+    categoryList = me.getValue(categoryKeyValue)
+
+    return categoryList
+
+
 # =================================================================
 # Funciones utilizadas para comparar elementos dentro de una lista
 # =================================================================
@@ -174,6 +228,12 @@ def compareViews(video1, video2):
     Compara el numero de views de dos videos, devuelve verdadero si el primero es mayor que el segundo
     """
     return int(video1['views']) > int(video2['views'])
+
+def compareTrending(video1, video2):
+    """
+    Compara el tiempo de trendig de dos videos, devuelve verdadero si el primero es mayor que el segundo
+    """
+    return int(video1['trending_time']) > int(video2['trending_time'])
 
 # ==========================
 # Funciones de ordenamiento
@@ -185,6 +245,14 @@ def sortVideosByViews(categoryAndCountry, rank):
     subList = lt.subList(sortedList,1,rank)
 
     return subList
+
+def sortVideosByTrending(categoryList, rank):
+
+    sortedList = sa.sort(categoryList, compareTrending)
+    subList = lt.subList(sortedList,1,rank)
+
+    return subList
+    
 
 # =========================
 # Funciones de comparación
@@ -213,7 +281,9 @@ def compareMapVideoIds(id, entry):
     else:
         return -1
 
+# ================================
 # Funciones para imprimir valores
+# ================================
 
 def printReqOne(orderedList,rank):
 
@@ -234,3 +304,10 @@ def printReqOne(orderedList,rank):
               element['dislikes']
               )
         counter += 1
+
+def printReqThree(oneVideoList):
+    video = lt.firstElement(oneVideoList)
+    print(video['title'] + "\t" +
+          video['channel_title'] + "\t" +
+          video['category_id']+ "\t" +
+          video['trending_time'])
