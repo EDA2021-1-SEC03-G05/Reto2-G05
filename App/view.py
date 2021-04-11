@@ -39,6 +39,8 @@ def printMenu():
     print("1- Inicializar catálogo")
     print("2- Cargar información en el catálogo")
     print("3- Top n videos más vistos para determinado país y categoría")
+    print("4- ")#TODO Requerimiento estudiante A
+    print("5- Video que más días ha sido trending para una categoría")
 
 
 """
@@ -59,6 +61,7 @@ while True:
         print("El total de categorías cargadas es: " + str(controller.categoriesSize(catalog)))
         print("Tiempo [ms]: ", f"{answer[0]:.3f}"," || ",
               "Memoria [kB]: ", f"{answer[1]:.3f}")
+        
     
     elif int(inputs[0]) == 3:
         category = input("Sobre que catergoría desea buscar: ")
@@ -75,7 +78,15 @@ while True:
         categoryNumber = (controller.getCategory(catalog,category.lower().strip()))
         categoryAndCountry = controller.getCategoryAndCountry(catalog, categoryNumber + country.lower().strip()) 
         answer = controller.sortVideosByViews(categoryAndCountry, rank)
-        controller.printReqOne(answer)
+        print("El top "+str(rank)+ " de videos con más views para la categoría "+category+" en el país ["+country+"] son: ")
+        controller.printReqOne(answer, rank)
+    
+    elif int(inputs[0]) == 4:
+        #TODO Requerimiento estudiante A
+        pass
+
+    elif int(inputs[0]) == 5:
+        category = input("Sobre que catergoría desea buscar: ")
 
     else:
         sys.exit(0)

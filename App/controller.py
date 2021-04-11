@@ -78,6 +78,8 @@ def loadVideos(catalog):
         model.addVideo(catalog, video)
         model.addVideoByCategory(catalog,video)
         model.addCategoryAndCountry(catalog, video)
+        video['trending_time']=1
+        model.addVideoById(catalog,video)
 
 def loadCategories(catalog):
     """
@@ -146,6 +148,6 @@ def deltaMemory(start_memory, stop_memory):
 
 # Funciones para imprimir valores
 
-def printReqOne(orderedList):
+def printReqOne(orderedList,rank):
 
-    model.printReqOne(orderedList)
+    model.printReqOne(orderedList,rank)

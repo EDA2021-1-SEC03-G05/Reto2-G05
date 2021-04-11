@@ -73,6 +73,11 @@ def newCatalog ():
     catalog['categoriesAndCountries'] = mp.newMap(500,
                                                   maptype='CHAINING',
                                                   loadfactor=0.5)
+    
+    catalog['videosById'] = mp.newMap(100000,
+                             maptype='PROBING',
+                             loadfactor=0.5
+                             )
 
     return catalog
 
@@ -86,19 +91,19 @@ def addVideo(catalog, video):
     """
     lt.addLast(catalog['videos'], video)
 
+
 def addVideoByCategory(catalog, video):
     existsCategory = mp.contains(catalog['videosByCategory'],video['category_id'])
 
     if existsCategory:
         existing = mp.get(catalog['videosByCategory'],video['category_id'])
-        value = existing['value']
-        lt.addLast(value, video)
+        existingList = me.getValue(existing)
+        lt.addLast(existingList, video)
     
     else:
         lists = lt.newList()
         lt.addFirst(lists, video)
         mp.put(catalog['videosByCategory'],video['category_id'],lists)
-
 
 
 def addCategory(catalog, category):
@@ -107,21 +112,34 @@ def addCategory(catalog, category):
     """
     mp.put(catalog['categories'],(category['name'].lower().strip()),category['id'])
 
+
 def addCategoryAndCountry(catalog, video):
     """
-    Agrega a un MAP un elemento cuyo 
+    
     """
     existsCategoryAndCountry = mp.contains(catalog['categoriesAndCountries'], (video['category_id'] + video['country'].lower().strip()))
 
     if existsCategoryAndCountry:
         existing = mp.get(catalog['categoriesAndCountries'],(video['category_id'] + video['country'].lower().strip()) )
-        value = existing['value']
-        lt.addLast(value, video)
+        existingList = me.getValue(existing)
+        lt.addLast(existingList, video)
     
     else:
         lists = lt.newList('ARRAY_LIST')
         lt.addFirst(lists, video)
         mp.put(catalog['categoriesAndCountries'],(video['category_id'] + video['country'].lower().strip()), lists)
+
+
+def addVideoById(catalog,video):
+
+    existingVideoId = mp.contains(catalog['videosById'],video['video_id'])
+
+    if existingVideoId:
+        exists = mp.get(catalog['videosById'],video['video_id'])
+        me.getValue(exists)['trending_time']+=1
+        
+    else:
+        mp.put(catalog['videosById'],video['video_id'],video)
 
 
 # Funciones para creacion de datos
@@ -197,14 +215,17 @@ def compareMapVideoIds(id, entry):
 
 # Funciones para imprimir valores
 
-def printReqOne(orderedList):
+def printReqOne(orderedList,rank):
 
     iterator = it.newIterator(orderedList)
+    counter = 1
+    print("trending_date\ttitle\tchannel_title\tpublish_time\tviews\tlikes\tdislikes")
 
     while it.hasNext(iterator):
 
         element = it.next(iterator)
-        print(element['trending_date'] + "\t" +
+        print("["+str(counter)+"] " +
+              element['trending_date'] + "\t" +
               element['title'] + "\t" +
               element['channel_title'] + "\t" +
               element['publish_time'] + "\t" +
@@ -212,3 +233,4 @@ def printReqOne(orderedList):
               element['likes'] + "\t" +
               element['dislikes']
               )
+        counter += 1
