@@ -72,7 +72,7 @@ def loadVideos(catalog):
     """
     Carga los videos del archivo. Por cada video se indica al modelo que debe adicionarlo al catalogo
     """
-    videosfile = cf.data_dir + 'Samples/videos-5pct.csv' #TODO cambiar la cantidad de videos por cargar
+    videosfile = cf.data_dir + 'Samples/videos-large.csv' #TODO cambiar la cantidad de videos por cargar
     inputfile = csv.DictReader(open(videosfile, encoding='utf-8'))
     for video in inputfile:
         model.addVideo(catalog, video)

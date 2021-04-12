@@ -30,7 +30,8 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
-from DISClib.DataStructures import arraylistiterator as it
+from DISClib.DataStructures import arraylistiterator as alit
+from DISClib.DataStructures import linkedlistiterator as slit
 assert cf
 
 """
@@ -61,8 +62,8 @@ def newCatalog ():
     catalog['videos'] = lt.newList(datastructure='SINGLE_LINKED')
 
     catalog['videosByCategory'] = mp.newMap(41,
-                                      maptype='PROBING', #TODO cambiar para las pruebas del Lab 7
-                                      loadfactor=0.3
+                                      maptype='PROBING',
+                                      loadfactor=0.5
                                       )
 
     catalog['categories'] = mp.newMap(41,
@@ -150,16 +151,17 @@ def addVideoById(catalog,video):
 # =================================
 
 def createList(catalog):
-    return mp.keySet(catalog['videosById'])
+    trendingList = mp.valueSet(catalog['videosById'])
+    
+    return trendingList
 
 def createMap(catalog, idList):
-    print(type(idList))#TODO Esta arrojando un dict en vez de un list
 
-    iterator = it.newIterator(idList)
+    iterator = slit.newIterator(idList)
 
-    while it.hasNext(iterator):
+    while slit.hasNext(iterator):
 
-        video = it.next(iterator)
+        video = slit.next(iterator)
         """
         Categorizacion por categorias
         """
@@ -287,13 +289,13 @@ def compareMapVideoIds(id, entry):
 
 def printReqOne(orderedList,rank):
 
-    iterator = it.newIterator(orderedList)
+    iterator = alit.newIterator(orderedList)
     counter = 1
     print("trending_date\ttitle\tchannel_title\tpublish_time\tviews\tlikes\tdislikes")
 
-    while it.hasNext(iterator):
+    while alit.hasNext(iterator):
 
-        element = it.next(iterator)
+        element = alit.next(iterator)
         print("["+str(counter)+"] " +
               element['trending_date'] + "\t" +
               element['title'] + "\t" +
@@ -307,7 +309,8 @@ def printReqOne(orderedList,rank):
 
 def printReqThree(oneVideoList):
     video = lt.firstElement(oneVideoList)
+    print("title\tchannel_title\tcategory_id\ttrending_time")
     print(video['title'] + "\t" +
           video['channel_title'] + "\t" +
           video['category_id']+ "\t" +
-          video['trending_time'])
+          str(video['trending_time']))

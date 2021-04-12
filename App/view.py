@@ -39,7 +39,7 @@ def printMenu():
     print("1- Inicializar catálogo")
     print("2- Cargar información en el catálogo")
     print("3- Top n videos más vistos para determinado país y categoría")
-    print("4- ")#TODO Requerimiento estudiante A
+    print("4- Video que más días ha sido trending para un país")
     print("5- Video que más días ha sido trending para una categoría")
 
 
@@ -89,7 +89,6 @@ while True:
         category = input("Sobre que catergoría desea buscar: ")
         categoryNumber = (controller.getCategory(catalog,category.lower().strip()))
         idList = controller.createList(catalog)
-        print(type(idList))#TODO no esta saliendo en tipo lista sino en diccionario
         mapidList = controller.createMap(catalog, idList)
         categoryList = controller.getCountryOrCategory(catalog, categoryNumber)
         answer = controller.sortVideosByTrending(categoryList, 1)
