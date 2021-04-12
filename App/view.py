@@ -41,6 +41,7 @@ def printMenu():
     print("3- Top n videos más vistos para determinado país y categoría")
     print("4- Video que más días ha sido trending para un país")
     print("5- Video que más días ha sido trending para una categoría")
+    print("6- Top n videos distintos con más likes para un país y tag específico")
 
 
 """
@@ -88,11 +89,24 @@ while True:
     elif int(inputs[0]) == 5:
         category = input("Sobre que catergoría desea buscar: ")
         categoryNumber = (controller.getCategory(catalog,category.lower().strip()))
+        """
+        Crea una lista de videos a partir el mapa que categoriza los videos por id y cuenta sus repeticiones
+
+        Luego crea un mapa donde las llaves son los paises y las categorias y los valores son las listas con los videos
+
+        Luego extrae esa lista y la ordena para luego imprimir el primero
+        """
         idList = controller.createList(catalog)
         mapidList = controller.createMap(catalog, idList)
         categoryList = controller.getCountryOrCategory(catalog, categoryNumber)
         answer = controller.sortVideosByTrending(categoryList, 1)
         controller.printReqThree(answer)
+
+    elif int(inputs[0]) == 6:
+        country = input("Sobre que país desea buscar: ")
+        tag = input("Bajo que tag desea filtrar los videos: ")
+        rank = int(input("Ingrese la cantidad de videos para el top de vistas: "))
+        
 
     else:
         sys.exit(0)
