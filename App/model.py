@@ -253,7 +253,7 @@ def getVideosByCategory(catalog, category):
 def getVideosByCountry(catalog, country):
     countryKeyValue = mp.get(catalog['videosByCountry'], country)
     countryList = me.getValue(countryKeyValue)
-    print(lt.size(countryList))
+    
 
     return countryList
 
@@ -322,7 +322,7 @@ def filterByTag(list, tag):
         if tag in cleanTag:
             lt.addLast(filteredList, video)
     
-    print(lt.size(filteredList))
+    
     return filteredList
 
 # ================================
