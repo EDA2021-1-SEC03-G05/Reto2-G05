@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.arraylist import newList
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -73,16 +74,20 @@ def newCatalog ():
     
     catalog['categoriesAndCountries'] = mp.newMap(500,
                                                   maptype='CHAINING',
-                                                  loadfactor=0.5)
+                                                  loadfactor=4.0)
     
     catalog['videosById'] = mp.newMap(100000,
                              maptype='PROBING',
                              loadfactor=0.5
                              )
 
-    catalog['countriesOrCategoriesById'] = mp.newMap(500,
-                                                  maptype='CHAINING',
-                                                  loadfactor=0.5)
+    catalog['CategoriesById'] = mp.newMap(41,
+                                maptype='CHAINING',
+                                loadfactor=4.0)
+
+    catalog['videosByCountry'] =mp.newMap(100,
+                                maptype='CHAINING',
+                                loadfactor=4.0)
 
     return catalog
 
@@ -120,7 +125,7 @@ def addCategory(catalog, category):
 
 def addCategoryAndCountry(catalog, video):
     """
-    
+    Para el req 1, en un mapa añade llaves que son la union de una categoria y un pais y como valor guarda una lista de videos
     """
     existsCategoryAndCountry = mp.contains(catalog['categoriesAndCountries'], (video['category_id'] + video['country'].lower().strip()))
 
@@ -146,16 +151,31 @@ def addVideoById(catalog,video):
     else:
         mp.put(catalog['videosById'],video['video_id'],video)
 
+def addVideoByCountry(catalog, video):
+
+    existingCountry = mp.contains(catalog['videosByCountry'],video['country'])
+
+    if existingCountry:
+        exists = mp.get(catalog['videosByCountry'],video['country'])
+        existingList = me.getValue(exists)
+        lt.addLast(existingList,video)
+
+    else: 
+        list = lt.newList(datastructure='ARRAY_LIST')
+        lt.addFirst(list, video)
+        mp.put(catalog['videosByCountry'],video['country'],list)
+
+
 # =================================
 # Funciones para creacion de datos
 # =================================
 
-def createList(catalog):
+def createCategoryList(catalog):
     trendingList = mp.valueSet(catalog['videosById'])
     
     return trendingList
 
-def createMap(catalog, idList):
+def createCategoryMap(catalog, idList):
 
     iterator = slit.newIterator(idList)
 
@@ -165,32 +185,42 @@ def createMap(catalog, idList):
         """
         Categorizacion por categorias
         """
-        existingCategory = mp.contains(catalog['countriesOrCategoriesById'],video['category_id'])
+        existingCategory = mp.contains(catalog['CategoriesById'],video['category_id'])
 
         if existingCategory:
-            existsCategory = mp.get(catalog['countriesOrCategoriesById'],video['category_id'])
+            existsCategory = mp.get(catalog['CategoriesById'],video['category_id'])
             categoryList = me.getValue(existsCategory)
             lt.addLast(categoryList, video)
 
         else: 
             newCategoryList = lt.newList('ARRAY_LIST')
             lt.addFirst(newCategoryList, video)
-            mp.put(catalog['countriesOrCategoriesById'],video['category_id'],newCategoryList)
+            mp.put(catalog['CategoriesById'],video['category_id'],newCategoryList)
 
-        """
-        Categorizacion por paises
-        """
-        existingCountry = mp.contains(catalog['countriesOrCategoriesById'],video['country'])
+def createUniqueCountry(list):
 
-        if existingCountry:
-            existsCountry = mp.get(catalog['countriesOrCategoriesById'],video['country'])
-            countryList = me.getValue(existsCountry)
-            lt.addLast(countryList, video)
+    idMap = mp.newMap(5500,
+                      maptype='CHAINING',
+                      loadfactor= 4.0)
+    
+    iterator = alit.newIterator(list)
+    while alit.hasNext(iterator):
+        video = alit.next(iterator)
+        newLikes = video['likes']
+
+        existingId = mp.get(idMap,video['video_id'])
+
+        if existingId:
+            keyValueId = mp.get(idMap,video['video_id'])
+            existingVideo = me.getValue(keyValueId)
+            if newLikes > existingVideo['likes']:
+                existingVideo['likes']=newLikes
 
         else: 
-            newCountryList = lt.newList('ARRAY_LIST')
-            lt.addFirst(newCountryList, video)
-            mp.put(catalog['countriesOrCategoriesById'],video['country'],newCountryList)
+            mp.put(idMap, video['video_id'],video)
+
+    return mp.valueSet(idMap)
+
 
 
 # ======================
@@ -214,11 +244,18 @@ def getCategoryAndCountry(catalog, categoryAndCountry):
 
     return answer
 
-def getCountryOrCategory(catalog, category):
-    categoryKeyValue = mp.get(catalog['countriesOrCategoriesById'], category)
+def getVideosByCategory(catalog, category):
+    categoryKeyValue = mp.get(catalog['CategoriesById'], category)
     categoryList = me.getValue(categoryKeyValue)
 
     return categoryList
+
+def getVideosByCountry(catalog, country):
+    countryKeyValue = mp.get(catalog['videosByCountry'], country)
+    countryList = me.getValue(countryKeyValue)
+    print(lt.size(countryList))
+
+    return countryList
 
 
 # =================================================================
@@ -237,6 +274,13 @@ def compareTrending(video1, video2):
     """
     return int(video1['trending_time']) > int(video2['trending_time'])
 
+def compareLikes(video1, video2):
+    """
+    Compara la cantidad de likes de dos videos, devuelve verdadero si el primero es mayor que el segundo
+    """
+    return int(video1['likes']) > int(video2['likes'])
+
+
 # ==========================
 # Funciones de ordenamiento
 # ==========================
@@ -254,34 +298,32 @@ def sortVideosByTrending(categoryList, rank):
     subList = lt.subList(sortedList,1,rank)
 
     return subList
+
+def sortVideosByLikes(filteredList, rank):
+
+    sortedList = sa.sort(filteredList, compareLikes)
+    sublist = lt.subList(sortedList,1,rank)
+
+    return sublist
+
+# =========================
+# Funciones de filtro
+# =========================
+
+def filterByTag(list, tag):
+
+    iterator = alit.newIterator(list)
+    filteredList = lt.newList('ARRAY_LIST')
+
+    while alit.hasNext(iterator):
+
+        video = alit.next(iterator)
+        cleanTag = video['tags'].replace('"','').replace('|','').lower()
+        if tag in cleanTag:
+            lt.addLast(filteredList, video)
     
-
-# =========================
-# Funciones de comparación
-# =========================
-
-def compareVideoIds(id1, id2):
-    """
-    Compara dos ids de dos libros
-    """
-    if (id1 == id2):
-        return 0
-    elif (id1 > id2):
-        return 1
-    else:
-        return -1
-
-def compareMapVideoIds(id, entry):
-    """
-    Compara dos ids de libros, id es un identificador y entry una pareja llave-valor
-    """
-    identry = me.getKey(entry)
-    if (int(id)==int(identry)):
-        return 0
-    elif (int(id) > int(identry)):
-        return 1
-    else:
-        return -1
+    print(lt.size(filteredList))
+    return filteredList
 
 # ================================
 # Funciones para imprimir valores
@@ -302,10 +344,18 @@ def printReqOne(orderedList,rank):
               element['channel_title'] + "\t" +
               element['publish_time'] + "\t" +
               element['views'] + "\t" +
-              element['likes'] + "\t" +
+              str(element['likes']) + "\t" +
               element['dislikes']
               )
         counter += 1
+
+def printReqTwo(oneVideoList):
+    video = lt.firstElement(oneVideoList)
+    print("title\tchannel_title\tcategory_id\ttrending_time")
+    print(video['title'] + "\t" +
+          video['channel_title'] + "\t" +
+          video['country']+ "\t" +
+          str(video['trending_time']))
 
 def printReqThree(oneVideoList):
     video = lt.firstElement(oneVideoList)
@@ -314,3 +364,23 @@ def printReqThree(oneVideoList):
           video['channel_title'] + "\t" +
           video['category_id']+ "\t" +
           str(video['trending_time']))
+
+def printReqFour(orderedList):
+
+    iterator = slit.newIterator(orderedList)
+    counter = 1
+    print("title\tchannel_title\tpublish_time\tviews\tlikes\tdislikes\ttags")
+
+    while slit.hasNext(iterator):
+
+        element = slit.next(iterator)
+        print("["+str(counter)+"] " +
+              element['title'] + "\t" +
+              element['channel_title'] + "\t" +
+              element['publish_time'] + "\t" +
+              element['views'] + "\t" +
+              str(element['likes']) + "\t" +
+              element['dislikes']+ "\t" +
+              element['tags'] 
+              )
+        counter += 1

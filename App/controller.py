@@ -48,6 +48,7 @@ def loadData(catalog):
     """
     Cargar los datos del archivo y cargarlos en la estructura de datos
     Y calcula el tiempo y la memoría
+    Crea una lista con los videos sin repeticiones y luego un mapa con estos para categoria y pais
     """
     delta_time = -1.0
     delta_memory = -1.0
@@ -77,6 +78,7 @@ def loadVideos(catalog):
     for video in inputfile:
         model.addVideo(catalog, video)
         model.addVideoByCategory(catalog,video)
+        model.addVideoByCountry(catalog, video)
         model.addCategoryAndCountry(catalog, video)
         video['trending_time']=1
         model.addVideoById(catalog,video)
@@ -101,6 +103,23 @@ def sortVideosByViews(categoryAndCountry, rank):
 def sortVideosByTrending(categoryList, rank):
     return model.sortVideosByTrending(categoryList, rank)
 
+def sortVideosByLikes(filteredList, rank):
+    return model.sortVideosByLikes(filteredList, rank)
+
+# ====================================
+# Funciones para la creacion de datos
+# ====================================
+
+def createUniqueCountry(list):
+    return model.createUniqueCountry(list)
+
+# =========================
+# Funciones de filtro
+# =========================
+
+def filterByTag(list, tag):
+    return model.filterByTag(list, tag)
+
 
 # ========================================
 # Funciones de consulta sobre el catálogo
@@ -118,14 +137,17 @@ def getCategory(catalog,category):
 def getCategoryAndCountry(catalog, categoryAndCountry):
     return model.getCategoryAndCountry(catalog, categoryAndCountry)
 
-def createList(catalog):
-    return model.createList(catalog)
+def createCategoryList(catalog):
+    return model.createCategoryList(catalog)
 
-def createMap(catalog, idList):
-    return model.createMap(catalog,idList)
+def createCategoryMap(catalog, idList):
+    return model.createCategoryMap(catalog,idList)
 
-def getCountryOrCategory(catalog, category):
-    return model.getCountryOrCategory(catalog, category)
+def getVideosByCategory(catalog, category):
+    return model.getVideosByCategory(catalog, category)
+
+def getVideosByCountry(catalog, country):
+    return model.getVideosByCountry(catalog, country)
 
 # ======================================
 # Funciones para medir tiempo y memoria
@@ -161,6 +183,7 @@ def deltaMemory(start_memory, stop_memory):
 
 # ================================
 # Funciones para imprimir valores
+# ================================
 
 def printReqOne(orderedList,rank):
 
@@ -169,3 +192,11 @@ def printReqOne(orderedList,rank):
 def printReqThree(oneVideoList):
 
     model.printReqThree(oneVideoList)
+
+def printReqTwo(oneVideoList):
+
+    model.printReqTwo(oneVideoList)
+
+def printReqFour(orderedList):
+
+    model.printReqFour(orderedList)

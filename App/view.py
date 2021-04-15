@@ -65,6 +65,7 @@ while True:
         
     
     elif int(inputs[0]) == 3:
+        # REQUERIMIENTO 1
         category = input("Sobre que catergoría desea buscar: ")
         country = input("Sobre que país desea buscar : ")
         rank = int(input("Ingrese la cantidad de videos para el top de vistas: "))
@@ -96,17 +97,23 @@ while True:
 
         Luego extrae esa lista y la ordena para luego imprimir el primero
         """
-        idList = controller.createList(catalog)
-        mapidList = controller.createMap(catalog, idList)
-        categoryList = controller.getCountryOrCategory(catalog, categoryNumber)
+        idList = controller.createCategoryList(catalog)
+        mapidList = controller.createCategoryMap(catalog, idList)
+        categoryList = controller.getVideosByCategory(catalog, categoryNumber)
         answer = controller.sortVideosByTrending(categoryList, 1)
         controller.printReqThree(answer)
 
     elif int(inputs[0]) == 6:
+        # REQUERIMIENTO 4
         country = input("Sobre que país desea buscar: ")
-        tag = input("Bajo que tag desea filtrar los videos: ")
+        tag = (input("Bajo que tag desea filtrar los videos: ")).strip().lower()
         rank = int(input("Ingrese la cantidad de videos para el top de vistas: "))
         
+        countryList = controller.getVideosByCountry(catalog, country)
+        filteredByTag = controller.filterByTag(countryList, tag)
+        uniqueCountry = controller.createUniqueCountry(filteredByTag)
+        sortedList = controller.sortVideosByLikes(uniqueCountry, rank)
+        controller.printReqFour(sortedList)
 
     else:
         sys.exit(0)
